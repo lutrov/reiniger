@@ -217,62 +217,119 @@ function reiniger_process() {
 	}
 	printf("<div id=\"reiniger\" class=\"wrap\">\n");
 	printf("<h1>Reiniger</h1>\n");
+	$nonce = null;
+	if (array_key_exists('reiniger_token', $_POST)) {
+		$nonce = $_POST['reiniger_token'];
+	}
 	switch (true) {
 		case array_key_exists('reiniger_revision', $_POST):
-			reiniger_delete_entries('revision');
-			$message = 'All post revisions have been deleted.';
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_delete_entries('revision');
+				$message = 'All post revisions have been deleted.';
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		case array_key_exists('reiniger_draft', $_POST):
-			reiniger_delete_entries('draft');
-			$message = 'All post drafts have been deleted.';
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_delete_entries('draft');
+				$message = 'All post drafts have been deleted.';
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		case array_key_exists('reiniger_autodraft', $_POST):
-			reiniger_delete_entries('autodraft');
-			$message = 'All post autodrafts have been deleted.';
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_delete_entries('autodraft');
+				$message = 'All post autodrafts have been deleted.';
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		case array_key_exists('reiniger_moderated', $_POST):
-			reiniger_delete_entries('moderated');
-			$message = 'All moderated comments have been deleted.';
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_delete_entries('moderated');
+				$message = 'All moderated comments have been deleted.';
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		case array_key_exists('reiniger_spam', $_POST):
-			reiniger_delete_entries('spam');
-			$message = 'All spam comments have been deleted.';
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_delete_entries('spam');
+				$message = 'All spam comments have been deleted.';
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		case array_key_exists('reiniger_trash', $_POST):
-			reiniger_delete_entries('trash');
-			$message = 'All trash comments have been deleted.';
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_delete_entries('trash');
+				$message = 'All trash comments have been deleted.';
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		case array_key_exists('reiniger_postmeta', $_POST):
-			reiniger_delete_entries('postmeta');
-			$message = 'All orphan postmeta have been deleted.';
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_delete_entries('postmeta');
+				$message = 'All orphan postmeta have been deleted.';
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		case array_key_exists('reiniger_commentmeta', $_POST):
-			reiniger_delete_entries('commentmeta');
-			$message = 'All orphan commentmeta have been deleted.';
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_delete_entries('commentmeta');
+				$message = 'All orphan commentmeta have been deleted.';
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		case array_key_exists('reiniger_relationships', $_POST):
-			reiniger_delete_entries('relationships');
-			$message = 'All orphan relationships have been deleted.';
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_delete_entries('relationships');
+				$message = 'All orphan relationships have been deleted.';
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		case array_key_exists('reiniger_transient', $_POST):
-			reiniger_delete_entries('transient');
-			$message = 'All transient options have been deleted.';
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_delete_entries('transient');
+				$message = 'All transient options have been deleted.';
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		case array_key_exists('reiniger_all', $_POST):
-			foreach (array('transient', 'revision', 'draft', 'autodraft', 'moderated', 'spam', 'trash', 'postmeta', 'commentmeta', 'relationships') as $type) {
-				reiniger_delete_entries($type);
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				foreach (array('transient', 'revision', 'draft', 'autodraft', 'moderated', 'spam', 'trash', 'postmeta', 'commentmeta', 'relationships') as $type) {
+					reiniger_delete_entries($type);
+				}
+				$message = 'All redundant data have been deleted.';
+			} else {
+				die('Failed nonce security check.');
 			}
-			$message = 'All redundant data have been deleted.';
 			break;
 		case array_key_exists('reiniger_delete', $_POST):
-			reiniger_delete_table($_POST['reiniger_delete']);
-			$message = sprintf('Database table <em>%s</em> has been deleted.', $_POST['reiniger_delete']);
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_delete_table($_POST['reiniger_delete']);
+				$message = sprintf('Database table <em>%s</em> has been deleted.', $_POST['reiniger_delete']);
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		case array_key_exists('reiniger_optimise_tables', $_POST):
-			reiniger_optimise_tables();
-			$message = 'All database tables have been optimised.';
+			if (strlen($nonce) > 0 && wp_verify_nonce($nonce, 'reiniger_token')) {
+				reiniger_optimise_tables();
+				$message = 'All database tables have been optimised.';
+			} else {
+				die('Failed nonce security check.');
+			}
 			break;
 		default:
+			$nonce = wp_create_nonce('reiniger_token');
 			$message = null;
 			break;
 	}
@@ -295,21 +352,21 @@ function reiniger_process() {
 	printf("</tr>\n");
 	printf("</thead>\n");
 	printf("<tbody id=\"the-list\">\n");
-	printf("<tr class=\"%s\"><td class=\"column-name\">Post Revisions</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_revision\" value=\"revision\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", 'alternate', $counts['revision'], $counts['revision'] > 0 ? 'button-primary' : 'button', $counts['revision'] > 0 ? null : 'disabled="disabled"');
-	printf("<tr class=\"%s\"><td class=\"column-name\">Post Drafts</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_draft\" value=\"draft\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", null, $counts['draft'], $counts['draft'] > 0 ? 'button-primary' : 'button', $counts['draft'] > 0 ? null : 'disabled="disabled"');
-	printf("<tr class=\"%s\"><td class=\"column-name\">Post Autodrafts</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_autodraft\" value=\"autodraft\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", 'alternate', $counts['autodraft'], $counts['autodraft'] > 0 ? 'button-primary' : 'button', $counts['autodraft'] > 0 ? null : 'disabled="disabled"');
-	printf("<tr class=\"%s\"><td class=\"column-name\">Moderated Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_moderated\" value=\"moderated\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", null, $counts['moderated'], $counts['moderated'] > 0 ? 'button-primary' : 'button', $counts['moderated'] > 0 ? null : 'disabled="disabled"');
-	printf("<tr class=\"%s\"><td class=\"column-name\">Spam Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_spam\" value=\"spam\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", 'alternate', $counts['spam'], $counts['spam'] > 0 ? 'button-primary' : 'button', $counts['spam'] > 0 ? null : 'disabled="disabled"');
-	printf("<tr class=\"%s\"><td class=\"column-name\">Trash Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_trash\" value=\"trash\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", null, $counts['trash'], $counts['trash'] > 0 ? 'button-primary' : 'button', $counts['trash'] > 0 ? null : 'disabled="disabled"');
-	printf("<tr class=\"%s\"><td class=\"column-name\">Orphan Postmeta</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_postmeta\" value=\"postmeta\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", 'alternate', $counts['postmeta'], $counts['postmeta'] > 0 ? 'button-primary' : 'button', $counts['postmeta'] > 0 ? null : 'disabled="disabled"');
-	printf("<tr class=\"%s\"><td class=\"column-name\">Orphan Commentmeta</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_commentmeta\" value=\"commentmeta\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", null, $counts['commentmeta'], $counts['commentmeta'] > 0 ? 'button-primary' : 'button', $counts['commentmeta'] > 0 ? null : 'disabled="disabled"');
-	printf("<tr class=\"%s\"><td class=\"column-name\">Orphan Relationships</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_relationships\" value=\"relationships\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", 'alternate', $counts['relationships'], $counts['relationships'] > 0 ? 'button-primary' : 'button', $counts['relationships'] > 0 ? null : 'disabled="disabled"');
-	printf("<tr class=\"%s\"><td class=\"column-name\">Transient Options</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_transient\" value=\"transient\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", null, $counts['transient'], $counts['transient'] > 0 ? 'button-primary' : 'button', $counts['transient'] > 0 ? null : 'disabled="disabled"');
+	printf("<tr class=\"%s\"><td class=\"column-name\">Post Revisions</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_revision\" value=\"revision\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", 'alternate', $counts['revision'], $nonce, $counts['revision'] > 0 ? 'button-primary' : 'button', $counts['revision'] > 0 ? null : 'disabled="disabled"');
+	printf("<tr class=\"%s\"><td class=\"column-name\">Post Drafts</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_draft\" value=\"draft\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", null, $counts['draft'], $nonce, $counts['draft'] > 0 ? 'button-primary' : 'button', $counts['draft'] > 0 ? null : 'disabled="disabled"');
+	printf("<tr class=\"%s\"><td class=\"column-name\">Post Autodrafts</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_autodraft\" value=\"autodraft\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", 'alternate', $counts['autodraft'], $nonce, $counts['autodraft'] > 0 ? 'button-primary' : 'button', $counts['autodraft'] > 0 ? null : 'disabled="disabled"');
+	printf("<tr class=\"%s\"><td class=\"column-name\">Moderated Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_moderated\" value=\"moderated\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", null, $counts['moderated'], $nonce, $counts['moderated'] > 0 ? 'button-primary' : 'button', $counts['moderated'] > 0 ? null : 'disabled="disabled"');
+	printf("<tr class=\"%s\"><td class=\"column-name\">Spam Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_spam\" value=\"spam\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", 'alternate', $counts['spam'], $nonce, $counts['spam'] > 0 ? 'button-primary' : 'button', $counts['spam'] > 0 ? null : 'disabled="disabled"');
+	printf("<tr class=\"%s\"><td class=\"column-name\">Trash Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_trash\" value=\"trash\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", null, $counts['trash'], $nonce, $counts['trash'] > 0 ? 'button-primary' : 'button', $counts['trash'] > 0 ? null : 'disabled="disabled"');
+	printf("<tr class=\"%s\"><td class=\"column-name\">Orphan Postmeta</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_postmeta\" value=\"postmeta\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", 'alternate', $counts['postmeta'], $nonce, $counts['postmeta'] > 0 ? 'button-primary' : 'button', $counts['postmeta'] > 0 ? null : 'disabled="disabled"');
+	printf("<tr class=\"%s\"><td class=\"column-name\">Orphan Commentmeta</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_commentmeta\" value=\"commentmeta\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", null, $counts['commentmeta'], $nonce, $counts['commentmeta'] > 0 ? 'button-primary' : 'button', $counts['commentmeta'] > 0 ? null : 'disabled="disabled"');
+	printf("<tr class=\"%s\"><td class=\"column-name\">Orphan Relationships</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_relationships\" value=\"relationships\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", 'alternate', $counts['relationships'], $nonce, $counts['relationships'] > 0 ? 'button-primary' : 'button', $counts['relationships'] > 0 ? null : 'disabled="disabled"');
+	printf("<tr class=\"%s\"><td class=\"column-name\">Transient Options</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_transient\" value=\"transient\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", null, $counts['transient'], $nonce, $counts['transient'] > 0 ? 'button-primary' : 'button', $counts['transient'] > 0 ? null : 'disabled="disabled"');
 	printf("</tbody>\n");
 	printf("</table>\n");
 	$sql = sprintf('SHOW TABLE STATUS FROM %s', DB_NAME);
 	$results = $wpdb->get_results($sql, ARRAY_A);
-	printf("<p><form action=\"\" method=\"post\" class=\"all\"><input type=\"hidden\" name=\"reiniger_all\" value=\"all\" /><input type=\"submit\" class=\"button-primary\" value=\"Delete All\" /></form></p>\n");
+	printf("<p><form action=\"\" method=\"post\" class=\"all\"><input type=\"hidden\" name=\"reiniger_all\" value=\"all\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"button-primary\" value=\"Delete All\"></form></p>\n", $nonce);
 	printf("<p>There were %s tables found.</p>\n", count($results));
 	printf("<table class=\"widefat\">\n");
 	printf("<thead>\n");
@@ -331,7 +388,7 @@ function reiniger_process() {
 	foreach ($results as $row) {
 		$size = ($row['Data_length'] + $row['Index_length']);
 		if (in_array(str_replace($wpdb->prefix, null, $row['Name']), $system_tables)) {
-			printf("<tr class=\"%s\"><td class=\"column-name\"><span class=\"%s\" title=\"This is a system table.\">%s</span></td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_delete\" value=\"%s\" /><input type=\"submit\" class=\"button\" value=\"Delete\" disabled=\"disabled\" /></form></td></tr>\n", $class, 'system', $row['Name'], reiniger_human_friendly_size($size), $row['Name']);
+			printf("<tr class=\"%s\"><td class=\"column-name\"><span class=\"%s\" title=\"This is a system table.\">%s</span></td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_delete\" value=\"%s\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"button\" value=\"Delete\" disabled=\"disabled\"></form></td></tr>\n", $class, 'system', $row['Name'], reiniger_human_friendly_size($size), $row['Name'], $nonce);
 		} else {
 			$style = 'button';
 			$onclick = 'disabled="disabled"';
@@ -352,7 +409,7 @@ function reiniger_process() {
 					$description = '<p class="description">This table seems to be referenced by the <code>"' . $guess . '"</code> plugin.</p>';
 				}
 			}
-			printf("<tr class=\"%s\"><td class=\"column-name\"><a href=\"http://google.com/search?q=%s+wordpress&amp;pws=0\" title=\"Google lookup.\" target=\"_blank\">%s</a>%s</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_delete\" value=\"%s\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", $class, substr($row['Name'], strlen($wpdb->prefix)), $row['Name'], $description, reiniger_human_friendly_size($size), $row['Name'], $style, $onclick);
+			printf("<tr class=\"%s\"><td class=\"column-name\"><a href=\"http://google.com/search?q=%s+wordpress&amp;pws=0\" title=\"Google lookup.\" target=\"_blank\">%s</a>%s</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_delete\" value=\"%s\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", $class, substr($row['Name'], strlen($wpdb->prefix)), $row['Name'], $description, reiniger_human_friendly_size($size), $row['Name'], $nonce, $style, $onclick);
 		}
 		$class = strlen($class) > 0 ? null : 'alternate';
 		$total += $size;
@@ -362,7 +419,7 @@ function reiniger_process() {
 	printf("<tr><th scope=\"col\" width=\"80%%\">Total</th><th scope=\"col\" class=\"manage-column num\" width=\"10%%\">%s</th><th scope=\"col\" class=\"manage-column num\" width=\"10%%\">&nbsp;</th></tr>\n", reiniger_human_friendly_size($total));
 	printf("</tfoot>\n");
 	printf("</table>\n");
-	printf("<p><form action=\"\" method=\"post\" class=\"all\"><input type=\"hidden\" name=\"reiniger_optimise_tables\" value=\"optimise\" /><input type=\"submit\" class=\"button-primary\" value=\"Optimise All Tables\" /></form></p>\n");
+	printf("<p><form action=\"\" method=\"post\" class=\"all\"><input type=\"hidden\" name=\"reiniger_optimise_tables\" value=\"optimise\"><input type=\"hidden\" name=\"reiniger_token\" value=\"%s\"><input type=\"submit\" class=\"button-primary\" value=\"Optimise All Tables\"></form></p>\n", $nonce);
 	printf("<p class=\"usage\">Current memory usage is %s, which peaked at %s.%s</p>", reiniger_human_friendly_size(memory_get_usage()), reiniger_human_friendly_size(memory_get_peak_usage()), $c > 0 ? ' <a href="#" id="reiniger-debug-toggle">Debug Info</a>' : null);
 	$info = trim($info);
 	if (strlen($info) > 0) {

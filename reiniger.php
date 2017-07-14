@@ -5,7 +5,7 @@ Plugin Name: Reiniger
 Description: Clean up your Wordpress database by removing "post revision", "post draft", "post autodraft", "moderated comments", "spam comments". "trash comments", "orphan postmeta", "orphan commentmeta", "orphan relationships" and "transient option" entries. You can also optimise your existing database tables or delete any unused database tables without using specialist tools. Why this plugin name? Reiniger means "cleaner" in German.
 Author: Ivan Lutrov
 Author URI: http://lutrov.com/
-Version: 2.0
+Version: 2.1
 */
 
 defined('ABSPATH') || die('Ahem.');
@@ -251,15 +251,27 @@ function reiniger_process() {
 	if (strlen($message) > 0) {
 		echo sprintf("<div id=\"message\" class=\"updated fade\"><p><strong>%s</strong></p></div>\n", $message);
 	}
+	echo sprintf("<div class=\"reiniger-help\">\n");
+	echo sprintf("<p>Reiniger cleans up your Wordpress database by removing <em>post revision</em>, <em>post draft</em>, <em>post autodraft</em>, <em>moderated comments</em>, <em>spam comments</em>. <em>trash comments</em>, <em>orphan postmeta</em>, <em>orphan commentmeta</em>, <em>orphan relationships</em> and <em>transient option</em> entries. It also allows you to optimise your existing or to delete any unused Wordpress database tables without using specialist tools.</p>");
+	echo sprintf("</div>\n");
+	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+		reiniger_analyse_current_issues();
+	} else {
+		echo sprintf("<p><form action=\"\" method=\"post\"><input type=\"submit\" class=\"button-primary\" value=\"Analyse Current Issues\"></form></p>\n");
+	}
+	echo sprintf("</div>\n");
+}
+
+//
+// Analyse current issues to report on.
+//
+function reiniger_analyse_current_issues() {
+	global $wpdb;
 	$counts = array();
 	foreach (array('revision', 'draft', 'autodraft', 'moderated', 'spam', 'trash', 'postmeta', 'commentmeta', 'relationships', 'transient') as $type) {
 		$counts[$type] = reiniger_count_entries($type);
 	}
-	echo sprintf("<p>Reiniger is installed and working correctly. <a href=\"#\" id=\"reiniger-help-toggle\">Help</a></p>\n");
-	echo sprintf("<div id=\"reiniger-help\">\n");
-	echo sprintf("<p>Reiniger cleans up your Wordpress database by removing <em>post revision</em>, <em>post draft</em>, <em>post autodraft</em>, <em>moderated comments</em>, <em>spam comments</em>. <em>trash comments</em>, <em>orphan postmeta</em>, <em>orphan commentmeta</em>, <em>orphan relationships</em> and <em>transient option</em> entries. It also allows you to optimise your existing or to delete any unused Wordpress database tables without using specialist tools.</p>");
-	echo sprintf("</div>\n");
-	echo sprintf("<p>There were %s entries found.</p>\n", array_sum($counts));
+	echo sprintf("<p class=\"count\">There were %s entries found.</p>\n", array_sum($counts));
 	echo sprintf("<table class=\"widefat\">");
 	echo sprintf("<thead>\n");
 	echo sprintf("<tr>\n");
@@ -267,22 +279,22 @@ function reiniger_process() {
 	echo sprintf("</tr>\n");
 	echo sprintf("</thead>\n");
 	echo sprintf("<tbody id=\"the-list\">\n");
-	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Post Revisions</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_revision\" value=\"revision\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", 'alternate', $counts['revision'], $counts['revision'] > 0 ? 'button-primary' : 'button', $counts['revision'] > 0 ? null : 'disabled="disabled"');
-	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Post Drafts</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_draft\" value=\"draft\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", null, $counts['draft'], $counts['draft'] > 0 ? 'button-primary' : 'button', $counts['draft'] > 0 ? null : 'disabled="disabled"');
-	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Post Autodrafts</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_autodraft\" value=\"autodraft\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", 'alternate', $counts['autodraft'], $counts['autodraft'] > 0 ? 'button-primary' : 'button', $counts['autodraft'] > 0 ? null : 'disabled="disabled"');
-	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Moderated Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_moderated\" value=\"moderated\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", null, $counts['moderated'], $counts['moderated'] > 0 ? 'button-primary' : 'button', $counts['moderated'] > 0 ? null : 'disabled="disabled"');
-	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Spam Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_spam\" value=\"spam\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", 'alternate', $counts['spam'], $counts['spam'] > 0 ? 'button-primary' : 'button', $counts['spam'] > 0 ? null : 'disabled="disabled"');
-	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Trash Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_trash\" value=\"trash\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", null, $counts['trash'], $counts['trash'] > 0 ? 'button-primary' : 'button', $counts['trash'] > 0 ? null : 'disabled="disabled"');
-	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Orphan Postmeta</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_postmeta\" value=\"postmeta\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", 'alternate', $counts['postmeta'], $counts['postmeta'] > 0 ? 'button-primary' : 'button', $counts['postmeta'] > 0 ? null : 'disabled="disabled"');
-	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Orphan Commentmeta</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_commentmeta\" value=\"commentmeta\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", null, $counts['commentmeta'], $counts['commentmeta'] > 0 ? 'button-primary' : 'button', $counts['commentmeta'] > 0 ? null : 'disabled="disabled"');
-	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Orphan Relationships</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_relationships\" value=\"relationships\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", 'alternate', $counts['relationships'], $counts['relationships'] > 0 ? 'button-primary' : 'button', $counts['relationships'] > 0 ? null : 'disabled="disabled"');
-	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Transient Options</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_transient\" value=\"transient\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", null, $counts['transient'], $counts['transient'] > 0 ? 'button-primary' : 'button', $counts['transient'] > 0 ? null : 'disabled="disabled"');
+	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Post Revisions</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_revision\" value=\"revision\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", 'alternate', $counts['revision'], $counts['revision'] > 0 ? 'button-primary' : 'button', $counts['revision'] > 0 ? null : 'disabled="disabled"');
+	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Post Drafts</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_draft\" value=\"draft\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", null, $counts['draft'], $counts['draft'] > 0 ? 'button-primary' : 'button', $counts['draft'] > 0 ? null : 'disabled="disabled"');
+	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Post Autodrafts</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_autodraft\" value=\"autodraft\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", 'alternate', $counts['autodraft'], $counts['autodraft'] > 0 ? 'button-primary' : 'button', $counts['autodraft'] > 0 ? null : 'disabled="disabled"');
+	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Moderated Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_moderated\" value=\"moderated\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", null, $counts['moderated'], $counts['moderated'] > 0 ? 'button-primary' : 'button', $counts['moderated'] > 0 ? null : 'disabled="disabled"');
+	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Spam Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_spam\" value=\"spam\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", 'alternate', $counts['spam'], $counts['spam'] > 0 ? 'button-primary' : 'button', $counts['spam'] > 0 ? null : 'disabled="disabled"');
+	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Trash Comments</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_trash\" value=\"trash\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", null, $counts['trash'], $counts['trash'] > 0 ? 'button-primary' : 'button', $counts['trash'] > 0 ? null : 'disabled="disabled"');
+	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Orphan Postmeta</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_postmeta\" value=\"postmeta\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", 'alternate', $counts['postmeta'], $counts['postmeta'] > 0 ? 'button-primary' : 'button', $counts['postmeta'] > 0 ? null : 'disabled="disabled"');
+	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Orphan Commentmeta</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_commentmeta\" value=\"commentmeta\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", null, $counts['commentmeta'], $counts['commentmeta'] > 0 ? 'button-primary' : 'button', $counts['commentmeta'] > 0 ? null : 'disabled="disabled"');
+	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Orphan Relationships</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_relationships\" value=\"relationships\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", 'alternate', $counts['relationships'], $counts['relationships'] > 0 ? 'button-primary' : 'button', $counts['relationships'] > 0 ? null : 'disabled="disabled"');
+	echo sprintf("<tr class=\"%s\"><td class=\"column-name\">Transient Options</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_transient\" value=\"transient\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", null, $counts['transient'], $counts['transient'] > 0 ? 'button-primary' : 'button', $counts['transient'] > 0 ? null : 'disabled="disabled"');
 	echo sprintf("</tbody>\n");
 	echo sprintf("</table>\n");
 	$query = sprintf('SHOW TABLE STATUS FROM %s', DB_NAME);
 	$results = $wpdb->get_results($query, ARRAY_A);
-	echo sprintf("<p><form action=\"\" method=\"post\" class=\"all\"><input type=\"hidden\" name=\"reiniger_all\" value=\"all\" /><input type=\"submit\" class=\"button-primary\" value=\"Delete All\" /></form></p>\n");
-	echo sprintf("<p>There were %s tables found.</p>\n", count($results));
+	echo sprintf("<p><form action=\"\" method=\"post\" class=\"all\"><input type=\"hidden\" name=\"reiniger_all\" value=\"all\"><input type=\"submit\" class=\"button-primary\" value=\"Delete All\"></form></p>\n");
+	echo sprintf("<p class=\"count\">There were %s tables found.</p>\n", count($results));
 	echo sprintf("<table class=\"widefat\">\n");
 	echo sprintf("<thead>\n");
 	echo sprintf("<tr><th scope=\"col\" width=\"80%%\">Table</th><th scope=\"col\" class=\"manage-column num\" width=\"10%%\">Size</th><th scope=\"col\" class=\"manage-column num\" width=\"10%%\">Action</th></tr>\n");
@@ -301,7 +313,7 @@ function reiniger_process() {
 	foreach ($results as $row) {
 		$size = ($row['Data_length'] + $row['Index_length']);
 		if (in_array(str_replace($wpdb->prefix, null, $row['Name']), $system_tables)) {
-			echo sprintf("<tr class=\"%s\"><td class=\"column-name\"><span class=\"%s\" title=\"This is a system table.\">%s</span></td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_delete\" value=\"%s\" /><input type=\"submit\" class=\"button\" value=\"Delete\" disabled=\"disabled\" /></form></td></tr>\n", $class, 'system', $row['Name'], reiniger_human_friendly_size($size), $row['Name']);
+			echo sprintf("<tr class=\"%s\"><td class=\"column-name\"><span class=\"%s\" title=\"This is a system table.\">%s</span></td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_delete\" value=\"%s\"><input type=\"submit\" class=\"button\" value=\"Delete\" disabled=\"disabled\"></form></td></tr>\n", $class, 'system', $row['Name'], reiniger_human_friendly_size($size), $row['Name']);
 		} else {
 			$style = 'button';
 			$onclick = 'disabled="disabled"';
@@ -316,10 +328,10 @@ function reiniger_process() {
 					$description = null;
 				} else {
 					$guess = ucwords(str_replace('-', ' ', strtok(ltrim(str_replace(dirname(dirname(__FILE__)), null, $matches[0]), '/'), '/')));
-					$description = sprintf('<p class="description">This table seems to be referenced by the <code>"%s"</code> plugin.</p>', $guess);
+					$description = sprintf('<p class="description">This table seems to be referenced by the <code>%s</code> plugin.</p>', $guess);
 				}
 			}
-			echo sprintf("<tr class=\"%s\"><td class=\"column-name\"><a href=\"http://google.com/search?q=%s+wordpress&amp;pws=0\" title=\"Google lookup.\" target=\"_blank\">%s</a>%s</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_delete\" value=\"%s\" /><input type=\"submit\" class=\"%s\" value=\"Delete\" %s /></form></td></tr>\n", $class, substr($row['Name'], strlen($wpdb->prefix)), $row['Name'], $description, reiniger_human_friendly_size($size), $row['Name'], $style, $onclick);
+			echo sprintf("<tr class=\"%s\"><td class=\"column-name\"><a href=\"http://google.com/search?q=%s+wordpress&amp;pws=0\" title=\"Google lookup.\" target=\"_blank\">%s</a>%s</td><td class=\"column-name num\">%s</td><td class=\"column-name num\"><form action=\"\" method=\"post\"><input type=\"hidden\" name=\"reiniger_delete\" value=\"%s\"><input type=\"submit\" class=\"%s\" value=\"Delete\" %s></form></td></tr>\n", $class, substr($row['Name'], strlen($wpdb->prefix)), $row['Name'], $description, reiniger_human_friendly_size($size), $row['Name'], $style, $onclick);
 		}
 		$class = strlen($class) > 0 ? null : 'alternate';
 		$total += $size;
@@ -329,8 +341,7 @@ function reiniger_process() {
 	echo sprintf("<tr><th scope=\"col\" width=\"80%%\">Total</th><th scope=\"col\" class=\"manage-column num\" width=\"10%%\">%s</th><th scope=\"col\" class=\"manage-column num\" width=\"10%%\">&nbsp;</th></tr>\n", reiniger_human_friendly_size($total));
 	echo sprintf("</tfoot>\n");
 	echo sprintf("</table>\n");
-	echo sprintf("<p><form action=\"\" method=\"post\" class=\"all\"><input type=\"hidden\" name=\"reiniger_optimise_tables\" value=\"optimise\" /><input type=\"submit\" class=\"button-primary\" value=\"Optimise All\" /></form></p>\n");
-	echo sprintf("</div>\n");
+	echo sprintf("<p><form action=\"\" method=\"post\" class=\"all\"><input type=\"hidden\" name=\"reiniger_optimise_tables\" value=\"optimise\"><input type=\"submit\" class=\"button-primary\" value=\"Optimise All\"></form></p>\n");
 }
 
 //
@@ -356,30 +367,20 @@ function reiniger_init() {
 //
 // Add custom stylesheet to admin header.
 //
-add_filter('admin_head', 'reiniger_custom_stylesheet', 1);
+add_filter('admin_head', 'reiniger_custom_stylesheet', 90);
 function reiniger_custom_stylesheet() {
-	if (strpos($_SERVER['QUERY_STRING'], 'page=reiniger') <> false) {
+	if (strpos($_SERVER['REQUEST_URI'], 'page=reiniger') <> false) {
 		echo sprintf("<style>\n");
+		echo sprintf("#reiniger p.count {margin-top:30px!important}\n");
 		echo sprintf("#reiniger table td span.system {color:#222;font-weight:bold}\n");
 		echo sprintf("#reiniger table td a {color:#222;text-decoration:none}\n");
 		echo sprintf("#reiniger table td a:hover {text-decoration:underline}\n");
-		echo sprintf("#reiniger-help-toggle {padding-left:6px;font-size:85%%;text-transform:uppercase}\n");
-		echo sprintf("#reiniger-help {display:none}\n");
+		echo sprintf("#reiniger-help {display:block}\n");
 		echo sprintf("#reiniger form {background:inherit!important}\n");
 		echo sprintf("#reiniger form.all {margin-bottom:20px!important;padding-left:0!important}\n");
 		echo sprintf("#reiniger table td form {margin:0!important;padding:0!important}\n");
 		echo sprintf("</style>\n");
 	}
-}
-
-//
-// Add help show/hide toggle to admin footer.
-//
-add_filter('admin_footer', 'reiniger_admin_jquery');
-function reiniger_admin_jquery() {
-	echo "<script type=\"text/javascript\">\n";
-	echo "jQuery(document).ready(function(){jQuery('#reiniger-help-toggle').click(function(e){e.preventDefault();if(jQuery('#reiniger-help').is(':hidden')){jQuery('#reiniger-help').show();}else{jQuery('#reiniger-help').hide();}});});\n";
-	echo "</script>\n";
 }
 
 ?>

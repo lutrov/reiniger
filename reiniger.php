@@ -3,9 +3,10 @@
 /*
 Plugin Name: Reiniger
 Description: Clean up your Wordpress database by removing "post revision", "post draft", "post autodraft", "moderated comments", "spam comments". "trash comments", "orphan postmeta", "orphan commentmeta", "orphan relationships" and "transient option" entries. You can also optimise your existing database tables or delete any unused database tables without using specialist tools. Why this plugin name? Reiniger means "cleaner" in German.
+Plugin URI: https://github.com/lutrov/reiniger
 Author: Ivan Lutrov
 Author URI: http://lutrov.com/
-Version: 2.2
+Version: 2.3
 */
 
 defined('ABSPATH') || die('Ahem.');
